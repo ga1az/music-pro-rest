@@ -4,4 +4,5 @@ export const CATEGORY_REPOSITORY = 'CategoryRepository';
 
 export interface CategoryRepository {
   findAll(): Promise<Category[]>;
+  findIdByName(name: string): Promise<string>;
 }
