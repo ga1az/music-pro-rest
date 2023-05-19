@@ -1,4 +1,5 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
 export type OrderDocument = Order & Document;
 
@@ -7,22 +8,24 @@ export class Order{
   @Prop({default: Date.now})
   date: Date;
 
-  @Prop({required: true})
-  rut: string;
+  @Prop({default: () => Math.floor(Math.random() * 1000000000).toString()})
+  buyOrder: string;
 
-  @Prop({required: false}) 
-  branchCode: string;
+  @Prop({default: () => Math.floor(Math.random() * 1000000000).toString()})
+  sessionId: string;
 
   @Prop({required: true})
   products: [
     {
-      sku: {type: String, ref: 'Product', required: true},
+      sku: {type: number, ref: 'Product', required: true},
       quantity: {type: Number, required: true}
     }
   ]
 
   @Prop({required: true})
-  subTotal: number;
+  total: number;
 }
+
+export type OrderModel = Model<OrderDocument>;
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

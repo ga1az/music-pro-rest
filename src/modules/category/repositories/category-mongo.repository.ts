@@ -19,6 +19,12 @@ export class CategoryMongoRepository implements CategoryRepository {
     return category.id;
   }
 
+  async create(name: string): Promise<Category> {
+    const category = new this.categoryModel({name: name})
+    const categoryDocument = await category.save();
+    return this.mapToCategory(categoryDocument);
+  }
+
   private mapToCategory(categoryDocument: CategoryDocument): Category {
     const category = new Category();
     category.id = categoryDocument.id;

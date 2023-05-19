@@ -5,8 +5,9 @@ export const PRODUCT_REPOSITORY = 'ProductRepository';
 
 export interface ProductRepository {
   findAll(): Promise<Product[]>;
-  findIdBySku(sku: string): Promise<string>;
+  findIdBySku(sku: number): Promise<string>;
   create(product: CreateProductDto): Promise<Product>;
-  update(product: Product): Promise<Product>;
-  delete(sku: string): Promise<void>;
+  exists(sku: number): Promise<boolean>;
+  update(sku: number, product: Product): Promise<Product>;
+  delete(sku: number): Promise<void>;
 }

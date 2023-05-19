@@ -2,11 +2,15 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CategoryModule } from './modules/category/category.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProductModule } from './modules/product/product.module';
+import { OrderModule } from './modules/order/order.module';
 
 
 @Module({
   imports: [
     CategoryModule,
+    ProductModule,
+    OrderModule,
     ConfigModule.forRoot({
       envFilePath:
         process.env.NODE_ENV === 'production'

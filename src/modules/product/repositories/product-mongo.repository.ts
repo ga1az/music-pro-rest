@@ -10,21 +10,32 @@ export class ProductMongoRepository implements ProductRepository{
   constructor(@InjectModel(Product.name) private productModel: ProductModel) {}
 
   async findAll(): Promise<Product[]> {
-    throw new Error("Method not implemented.");
+    const products = await this.productModel.find().exec();
+    return products.map(product => this.mapToProduct(product));
   }
-  async findIdBySku(sku: string): Promise<string> {
-    throw new Error("Method not implemented.");
+
+  async findIdBySku(sku: number): Promise<string> {
+    const id = await this.productModel.findOne({sku: sku}).select('_id').exec();
+    return id._id.toString();
   }
+
+  async exists(sku: number): Promise<boolean> {
+    const product = await this.productModel.findOne({ sku: sku }).exec();
+    return !!product;
+  }
+
   async create(product: CreateProductDto): Promise<Product> {
     const createdProduct = await new this.productModel(product).save();
     return this.mapToProduct(createdProduct);
-    
   }
-  async update(product: Product): Promise<Product> {
-    throw new Error("Method not implemented.");
+
+  async update(sku: number, product: Product): Promise<Product> {
+    const updatedProduct = await this.productModel.findOneAndUpdate({ sku: sku }, product, { new: true }).exec();
+    return this.mapToProduct(updatedProduct);
   }
-  async delete(sku: string): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async delete(sku: number): Promise<void> {
+    await this.productModel.deleteOne({sku: sku}).exec();
   }
 
   private mapToProduct(productDocument: ProductDocument): Product {

@@ -3,6 +3,8 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './schemas/product.schema';
+import { PRODUCT_REPOSITORY } from './repositories/product.repository';
+import { ProductMongoRepository } from './repositories/product-mongo.repository';
 
 
 @Module({
@@ -10,6 +12,10 @@ import { Product, ProductSchema } from './schemas/product.schema';
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
   ],
   controllers: [ProductController],
-  providers: [ProductService]
+  providers: [ProductService, {
+    provide: PRODUCT_REPOSITORY,
+    useClass: ProductMongoRepository
+  }],
+  exports: [ProductService]
 })
 export class ProductModule {}
