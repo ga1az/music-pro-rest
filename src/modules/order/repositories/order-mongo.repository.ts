@@ -24,6 +24,8 @@ export class OrderMongoRepository {
     order.date = orderDocument.date;
     order.buyOrder = orderDocument.buyOrder;
     order.sessionId = orderDocument.sessionId;
+    order.rut = orderDocument.rut;
+    order.branchCode = orderDocument.branchCode;
     order.products = orderDocument.products.map(product => product);
     order.total = orderDocument.total;
     return order;

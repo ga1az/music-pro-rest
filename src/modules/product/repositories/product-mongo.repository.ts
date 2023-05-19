@@ -9,7 +9,12 @@ import { ProductDocument, ProductModel } from "../schemas/product.schema";
 export class ProductMongoRepository implements ProductRepository{
   constructor(@InjectModel(Product.name) private productModel: ProductModel) {}
 
-  async findAll(): Promise<Product[]> {
+  async findAll(inStock: boolean): Promise<Product[]> {
+    if(inStock){
+      const products = await this.productModel.find({stock: {$gt: 0}}).exec();
+      return products.map(product => this.mapToProduct(product));
+    }
+
     const products = await this.productModel.find().exec();
     return products.map(product => this.mapToProduct(product));
   }
@@ -36,6 +41,11 @@ export class ProductMongoRepository implements ProductRepository{
 
   async delete(sku: number): Promise<void> {
     await this.productModel.deleteOne({sku: sku}).exec();
+  }
+
+  async changeStock(sku: number, quantity: number): Promise<Product> {
+    const updatedProduct = await this.productModel.findOneAndUpdate({ sku: sku }, { stock: quantity }, { new: true }).exec();
+    return this.mapToProduct(updatedProduct);
   }
 
   private mapToProduct(productDocument: ProductDocument): Product {

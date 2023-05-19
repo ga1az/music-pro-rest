@@ -4,10 +4,11 @@ import { Product } from "../entities/product.entity";
 export const PRODUCT_REPOSITORY = 'ProductRepository';
 
 export interface ProductRepository {
-  findAll(): Promise<Product[]>;
+  findAll(inStock: boolean): Promise<Product[]>;
   findIdBySku(sku: number): Promise<string>;
   create(product: CreateProductDto): Promise<Product>;
   exists(sku: number): Promise<boolean>;
   update(sku: number, product: Product): Promise<Product>;
   delete(sku: number): Promise<void>;
+  changeStock(sku: number, quantity: number): Promise<Product>;
 }

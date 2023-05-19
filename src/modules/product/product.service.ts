@@ -9,8 +9,8 @@ export class ProductService {
     @Inject(PRODUCT_REPOSITORY) private readonly productRepository: ProductRepository
   ){}
 
-  async findAll(): Promise<Product[]> {
-    return await this.productRepository.findAll();
+  async findAll(inStock: boolean): Promise<Product[]> {
+    return await this.productRepository.findAll(inStock);
   }
 
   async findIdBySku(sku: number): Promise<string> {
@@ -43,5 +43,13 @@ export class ProductService {
       throw new NotFoundException(`Product with SKU ${sku} not found`);
     }
     return await this.productRepository.delete(sku);
+  }
+
+  async changeStock(sku: number, quantity: number): Promise<Product> {
+    const exists = await this.productRepository.exists(sku);
+    if (!exists) {
+      throw new NotFoundException(`Product with SKU ${sku} not found`);
+    }
+    return await this.productRepository.changeStock(sku, quantity);
   }
 }

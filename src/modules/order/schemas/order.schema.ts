@@ -8,6 +8,12 @@ export class Order{
   @Prop({default: Date.now})
   date: Date;
 
+  @Prop({required: true})
+  rut: string;
+
+  @Prop({required: true})
+  branchCode: number;
+
   @Prop({default: () => Math.floor(Math.random() * 1000000000).toString()})
   buyOrder: string;
 
