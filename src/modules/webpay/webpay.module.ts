@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { WebpayService } from './webpay.service';
 import { WebpayController } from './webpay.controller';
 import { ConfigModule } from '@nestjs/config';
+import { OrderModule } from '../order/order.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, OrderModule],
   controllers: [WebpayController],
-  providers: [WebpayService],
-  exports: [WebpayService]
+  providers: [WebpayService]
 })
 export class WebpayModule {}

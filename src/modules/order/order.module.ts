@@ -11,13 +11,13 @@ import { ProductModule } from '../product/product.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    WebpayModule,
     ProductModule
   ],
   controllers: [OrderController],
   providers: [OrderService, {
     provide: ORDER_REPOSITORY,
     useClass: OrderMongoRepository
-  }]
+  }],
+  exports: [OrderService]
 })
 export class OrderModule {}
