@@ -4,23 +4,23 @@ import { Types, Model } from "mongoose";
 export type ProductDocument = Product & Document;
 
 @Schema()
-export class Product{
-  @Prop({required: true, unique: true})
+export class Product {
+  @Prop({ required: true, unique: true })
   sku: number;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   name: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   price: number;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   description: string;
 
-  @Prop({required: true, type: Types.ObjectId, ref: 'Category'})
+  @Prop({ required: true, type: Types.ObjectId, ref: 'Category' })
   categories: Types.ObjectId[];
 
-  @Prop({required: true})
+  @Prop({ required: true })
   stock: number;
 }
 
