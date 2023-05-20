@@ -7,7 +7,11 @@ import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class OrderService {
-  constructor(@Inject(ORDER_REPOSITORY) private readonly orderRepository: OrderRepository, private webpayService: WebpayService, private productService: ProductService) {}
+  constructor(
+    @Inject(ORDER_REPOSITORY) private readonly orderRepository: OrderRepository,
+    private webpayService: WebpayService,
+    private productService: ProductService,
+  ) { }
 
   async findAll(): Promise<Order[]> {
     try {
@@ -25,13 +29,22 @@ export class OrderService {
         if (!productExists) {
           throw new NotFoundException(`Product with SKU ${product.sku} not found`);
         }
+        const productStock = await this.productService.getStock(product.sku);
+        if (productStock < product.quantity) {
+          throw new NotFoundException(`Insufficient stock for product with SKU ${product.sku}`);
+        }
+        //Calcula el total del producto
+        const productTotal = await this.productService.getTotal(product.sku, product.quantity);
+        if (productTotal !== order.total) {
+          throw new NotFoundException(`The total of the product with SKU ${product.sku} is incorrect`);
+        }
+        // Reduce el stock del producto
+        await this.productService.changeStock(product.sku, product.quantity);
       });
-  
       await Promise.all(products);
-  
+
       const createdOrder = await this.orderRepository.create(order);
-      const webpay = await this.webpayService.createTransaction(createdOrder.total, createdOrder.buyOrder, createdOrder.sessionId);
-      return webpay;
+      return createdOrder;
     } catch (error) {
       console.log(error);
       throw error;

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ProductRepository } from "./product.repository";
 import { CreateProductDto } from "../dto/create-product.dto";
 import { Product } from "../entities/product.entity";
@@ -6,12 +6,12 @@ import { InjectModel } from "@nestjs/mongoose";
 import { ProductDocument, ProductModel } from "../schemas/product.schema";
 
 @Injectable()
-export class ProductMongoRepository implements ProductRepository{
-  constructor(@InjectModel(Product.name) private productModel: ProductModel) {}
+export class ProductMongoRepository implements ProductRepository {
+  constructor(@InjectModel(Product.name) private productModel: ProductModel) { }
 
   async findAll(inStock: boolean): Promise<Product[]> {
-    if(inStock){
-      const products = await this.productModel.find({stock: {$gt: 0}}).exec();
+    if (inStock) {
+      const products = await this.productModel.find({ stock: { $gt: 0 } }).exec();
       return products.map(product => this.mapToProduct(product));
     }
 
@@ -20,7 +20,7 @@ export class ProductMongoRepository implements ProductRepository{
   }
 
   async findIdBySku(sku: number): Promise<string> {
-    const id = await this.productModel.findOne({sku: sku}).select('_id').exec();
+    const id = await this.productModel.findOne({ sku: sku }).select('_id').exec();
     return id._id.toString();
   }
 
@@ -40,12 +40,42 @@ export class ProductMongoRepository implements ProductRepository{
   }
 
   async delete(sku: number): Promise<void> {
-    await this.productModel.deleteOne({sku: sku}).exec();
+    await this.productModel.deleteOne({ sku: sku }).exec();
+  }
+
+  async getTotal(sku: number, quantity: number): Promise<number> {
+    const product = await this.productModel.findOne({ sku: sku }).exec();
+    if (!product) {
+      throw new NotFoundException(`Product with SKU ${sku} not found`);
+    }
+    return quantity * product.price;
+  }
+
+  async getStock(sku: number): Promise<number> {
+    const product = await this.productModel.findOne({ sku: sku }).exec();
+    if (!product) {
+      throw new NotFoundException(`Product with SKU ${sku} not found`);
+    }
+    return product.stock;
   }
 
   async changeStock(sku: number, quantity: number): Promise<Product> {
-    const updatedProduct = await this.productModel.findOneAndUpdate({ sku: sku }, { stock: quantity }, { new: true }).exec();
-    return this.mapToProduct(updatedProduct);
+    //reduce the stock
+    const product = await this.productModel.findOneAndUpdate({ sku: sku }, { $inc: { stock: -quantity } }, { new: true }).exec();
+    if (!product) {
+      throw new NotFoundException(`Product with SKU ${sku} not found`);
+    }
+    return this.mapToProduct(product);
+  }
+
+  async updateStock(sku: number, quantity: number): Promise<Product> {
+    //change the stock for the one entered
+    const product = await this.productModel.findOneAndUpdate({ sku: sku }, { stock: quantity }, { new: true }).exec();
+    if (!product) {
+      throw new NotFoundException(`Product with SKU ${sku} not found`);
+    }
+
+    return this.mapToProduct(product);
   }
 
   private mapToProduct(productDocument: ProductDocument): Product {
