@@ -19,7 +19,7 @@ export class OrderController {
   @ApiOperation({summary: 'Crea una orden'})
   @ApiResponse({status: 200, description: 'Orden creada', type: Order})
   @Post()
-  async create(@Body() orderBody: CreateOrderDto): Promise<any> {
+  async create(@Body() orderBody: CreateOrderDto): Promise<Order> {
     const order = await this.orderService.create(orderBody);
     return order;
   }

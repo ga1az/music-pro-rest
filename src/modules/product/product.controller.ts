@@ -67,7 +67,9 @@ export class ProductController {
     return await this.productService.getStock(sku);
   }
 
+  @ApiOperation({summary: 'Cambia el stock de un producto'})
   @ApiParam({ name: 'sku', required: true, type: Number })
+  @ApiResponse({status: 200, description: 'Stock cambiado', type: Product})
   @ApiBody({ type: PutProductStock })
   @Put(':sku/stock')
   async updateStock(@Param('sku') sku: number, @Body('quantity') quantity: number): Promise<Product> {
