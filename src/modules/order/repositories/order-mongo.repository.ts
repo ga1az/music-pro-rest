@@ -9,13 +9,19 @@ export class OrderMongoRepository {
   constructor(@InjectModel(Order.name) private orderModel: OrderModel) {}
 
   async findAll(): Promise<Order[]> {
-    const orders = await this.orderModel.find().exec();
-    return orders
+    return await this.orderModel.find().exec();
   }
 
   async create(order: Order): Promise<Order> {
-    const createdOrder = await new this.orderModel(order).save();
-    return createdOrder
+    return await new this.orderModel(order).save();
+  }
+
+  async findByBuyOrder(buyOrder: string): Promise<Order> {
+    return await this.orderModel.findOne({ buyOrder }).exec();
+  }
+
+  async changeStatus(buyOrder: string, status: string): Promise<Order> {
+    return await this.orderModel.findOneAndUpdate({ buyOrder }, { status }, { new: true }).exec();
   }
 
 

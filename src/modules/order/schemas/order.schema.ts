@@ -20,6 +20,9 @@ export class Order{
   @Prop({default: () => Math.floor(Math.random() * 1000000000).toString()})
   sessionId: string;
 
+  @Prop({required: true, default: 'PENDING'})
+  status: string;
+
   @Prop({required: true})
   products: [
     {

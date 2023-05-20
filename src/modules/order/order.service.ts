@@ -2,24 +2,14 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ORDER_REPOSITORY, OrderRepository } from './repositories/order.repository';
 import { Order } from './entities/order.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { WebpayService } from '../webpay/webpay.service';
 import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class OrderService {
-  constructor(
-    @Inject(ORDER_REPOSITORY) private readonly orderRepository: OrderRepository,
-    private webpayService: WebpayService,
-    private productService: ProductService,
-  ) { }
+  constructor(@Inject(ORDER_REPOSITORY) private readonly orderRepository: OrderRepository, private productService: ProductService) { }
 
   async findAll(): Promise<Order[]> {
-    try {
-      return await this.orderRepository.findAll();
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    return await this.orderRepository.findAll();
   }
 
   async create(order: CreateOrderDto): Promise<any> {
@@ -49,5 +39,13 @@ export class OrderService {
       console.log(error);
       throw error;
     }
+  }
+
+  async findByBuyOrder(buyOrder: string): Promise<Order> {
+    return await this.orderRepository.findByBuyOrder(buyOrder);
+  }
+
+  async changeStatus(buyOrder: string, status: string): Promise<Order> {
+    return await this.orderRepository.changeStatus(buyOrder, status);
   }
 }
