@@ -133,6 +133,11 @@ describe('ProductController', () => {
         });
     });
 
+    it('should return a 404 HTTP status code', async () => {
+        jest.spyOn(service, 'findAll').mockImplementation(async () => []);
+
+        await expect(controller.findAll()).rejects.toHaveProperty('status', 404);
+    });
 
     it('should fail to create a product without a category', async () => {
         const product = {

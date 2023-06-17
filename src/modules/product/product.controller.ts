@@ -15,6 +15,10 @@ export class ProductController {
   @ApiQuery({ name: 'inStock', required: false, type: Boolean })
   @Get()
   async findAll(@Query('inStock') inStock: boolean = false): Promise<Product[]> {
+    // if no products return 404
+    if ((await this.productService.findAll(inStock)).length === 0) {
+      throw new HttpException('No products found', 404);
+    }
     return await this.productService.findAll(inStock);
   }
 
