@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import exp from 'constants';
+import { ConflictException } from '@nestjs/common';
 
 // create an unit test that test the post of a product
 describe('ProductController', () => {
@@ -19,6 +20,7 @@ describe('ProductController', () => {
                     useValue: {
                         create: jest.fn(),
                         update: jest.fn(),
+                        updateStock: jest.fn(),
                     },
                 },
             ],
@@ -54,28 +56,56 @@ describe('ProductController', () => {
         expect(await controller.create(product)).toBe(result);
     });
 
-    describe('Update', () => {
-        it('should update a product name', async () => {
-            const product = {
-                name: 'Product 1',
-                description: 'Product description',
-                price: 10,
-                sku: 123,
-                categories: ['Category 1', 'Category 2'],
-                stock: 10,
-            };
+    it('should update a product name', async () => {
+        const product = {
+            name: 'Product 1',
+            description: 'Product description',
+            price: 10,
+            sku: 123,
+            categories: ['Category 1', 'Category 2'],
+            stock: 10,
+        };
 
-            const result = {
-                id: 1,
-                ...product,
-            };
+        const result = {
+            id: 1,
+            ...product,
+        };
 
-            jest.spyOn(service, 'update').mockImplementation(async () => result);
+        jest.spyOn(service, 'update').mockImplementation(async () => result);
 
-            expect(await controller.update(123, product)).toBe(result);
-        });
+        expect(await controller.update(123, product)).toBe(result);
     });
 
+    it('should modify the stock of a product', async () => {
+        const product = {
+            name: 'Product 1',
+            description: 'Product description',
+            price: 10,
+            sku: 123,
+            categories: ['Category 1', 'Category 2'],
+            stock: 10,
+        };
+
+        const updatedProduct = {
+            ...product,
+            stock: -5,
+        };
+
+        jest.spyOn(service, 'update').mockImplementation(async () => updatedProduct);
+
+        expect(await controller.update(123, updatedProduct)).toBe(updatedProduct);
+    });
+
+    it('should throw an exception when updating stock with negative value', async () => {
+        const sku = 123;
+        const quantity = -5;
+
+        jest.spyOn(service, 'updateStock').mockImplementation(async () => {
+            throw new ConflictException(`The quantity can't be negative`);
+        });
+
+        await expect(controller.updateStock(sku, quantity)).rejects.toThrow(`The quantity can't be negative`);
+    });
 
 
 
