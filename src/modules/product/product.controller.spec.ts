@@ -21,6 +21,7 @@ describe('ProductController', () => {
                         create: jest.fn(),
                         update: jest.fn(),
                         updateStock: jest.fn(),
+                        findAll: jest.fn(),
                     },
                 },
             ],
@@ -105,7 +106,32 @@ describe('ProductController', () => {
         await expect(controller.updateStock(sku, quantity)).rejects.toHaveProperty('status', 400);
     });
 
+    describe('List products', () => {
+        it('should return a list of products', async () => {
+            const products = [
+                {
+                    name: 'Product 1',
+                    description: 'Product description',
+                    price: 10,
+                    sku: 123,
+                    categories: ['Category 1', 'Category 2'],
+                    stock: 10,
+                },
+                {
+                    name: 'Product 2',
+                    description: 'Product description',
+                    price: 20,
+                    sku: 456,
+                    categories: ['Category 2', 'Category 3'],
+                    stock: 5,
+                },
+            ];
 
+            jest.spyOn(service, 'findAll').mockImplementation(async () => products);
+
+            expect(await controller.findAll()).toBe(products);
+        });
+    });
 
 
     it('should fail to create a product without a category', async () => {

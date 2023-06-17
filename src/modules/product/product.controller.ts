@@ -79,4 +79,5 @@ export class ProductController {
     }
     return await this.productService.updateStock(sku, quantity);
   }
+
 }
