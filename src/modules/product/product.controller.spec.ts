@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import exp from 'constants';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, HttpException } from '@nestjs/common';
 
 // create an unit test that test the post of a product
 describe('ProductController', () => {
@@ -88,7 +88,7 @@ describe('ProductController', () => {
 
         const updatedProduct = {
             ...product,
-            stock: -5,
+            stock: 5,
         };
 
         jest.spyOn(service, 'update').mockImplementation(async () => updatedProduct);
@@ -100,12 +100,11 @@ describe('ProductController', () => {
         const sku = 123;
         const quantity = -5;
 
-        jest.spyOn(service, 'updateStock').mockImplementation(async () => {
-            throw new ConflictException(`The quantity can't be negative`);
-        });
-
-        await expect(controller.updateStock(sku, quantity)).rejects.toThrow(`The quantity can't be negative`);
+        await expect(controller.updateStock(sku, quantity)).rejects.toThrow(HttpException);
+        await expect(controller.updateStock(sku, quantity)).rejects.toThrow('Negative stock is not allowed');
+        await expect(controller.updateStock(sku, quantity)).rejects.toHaveProperty('status', 400);
     });
+
 
 
 

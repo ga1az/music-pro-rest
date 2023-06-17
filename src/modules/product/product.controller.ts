@@ -10,40 +10,40 @@ import { PutProductStock } from './dto/put-product-stock';
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
-  @ApiOperation({summary: 'Obtiene todos los productos'})
-  @ApiResponse({status: 200, description: 'Productos obtenidos', type: Product})
+  @ApiOperation({ summary: 'Obtiene todos los productos' })
+  @ApiResponse({ status: 200, description: 'Productos obtenidos', type: Product })
   @ApiQuery({ name: 'inStock', required: false, type: Boolean })
   @Get()
   async findAll(@Query('inStock') inStock: boolean = false): Promise<Product[]> {
     return await this.productService.findAll(inStock);
   }
 
-  @ApiOperation({summary: 'Obtiene un producto por su sku'})
-  @ApiResponse({status: 200, description: 'Producto obtenido', type: Product})
+  @ApiOperation({ summary: 'Obtiene un producto por su sku' })
+  @ApiResponse({ status: 200, description: 'Producto obtenido', type: Product })
   @ApiParam({ name: 'sku', required: true, type: Number })
   @Get(':sku')
   async findIdBySku(@Param('sku') sku: number): Promise<string> {
     return await this.productService.findIdBySku(sku);
   }
 
-  @ApiOperation({summary: 'Verifica si existe un producto por su sku'})
-  @ApiResponse({status: 200, description: 'Producto encontrado', type: Boolean})
+  @ApiOperation({ summary: 'Verifica si existe un producto por su sku' })
+  @ApiResponse({ status: 200, description: 'Producto encontrado', type: Boolean })
   @ApiParam({ name: 'sku', required: true, type: Number })
   @Get(':sku/exists')
   async exists(@Param('sku') sku: number): Promise<boolean> {
     return await this.productService.exists(sku);
   }
 
-  @ApiOperation({summary: 'Crea un producto'})
-  @ApiResponse({status: 200, description: 'Producto creado', type: Product})
+  @ApiOperation({ summary: 'Crea un producto' })
+  @ApiResponse({ status: 200, description: 'Producto creado', type: Product })
   @ApiBody({ type: CreateProductDto })
   @Post()
   async create(@Body() product: CreateProductDto): Promise<Product> {
     return await this.productService.create(product);
   }
 
-  @ApiOperation({summary: 'Actualiza un producto'})
-  @ApiResponse({status: 200, description: 'Producto actualizado', type: Product})
+  @ApiOperation({ summary: 'Actualiza un producto' })
+  @ApiResponse({ status: 200, description: 'Producto actualizado', type: Product })
   @ApiParam({ name: 'sku', required: true, type: Number })
   @ApiBody({ type: Product })
   @Put(':sku')
@@ -51,25 +51,25 @@ export class ProductController {
     return await this.productService.update(sku, product);
   }
 
-  @ApiOperation({summary: 'Elimina un producto'})
-  @ApiResponse({status: 200, description: 'Producto eliminado'})
+  @ApiOperation({ summary: 'Elimina un producto' })
+  @ApiResponse({ status: 200, description: 'Producto eliminado' })
   @ApiParam({ name: 'sku', required: true, type: Number })
   @Delete(':sku')
   async delete(@Param('sku') sku: number): Promise<void> {
     return await this.productService.delete(sku);
   }
 
-  @ApiOperation({summary: 'Cambia el stock de un producto'})
-  @ApiResponse({status: 200, description: 'Stock cambiado', type: Product})
+  @ApiOperation({ summary: 'Cambia el stock de un producto' })
+  @ApiResponse({ status: 200, description: 'Stock cambiado', type: Product })
   @ApiParam({ name: 'sku', required: true, type: Number })
   @Get(':sku/stock')
   async getStock(@Param('sku') sku: number): Promise<number> {
     return await this.productService.getStock(sku);
   }
 
-  @ApiOperation({summary: 'Cambia el stock de un producto'})
+  @ApiOperation({ summary: 'Cambia el stock de un producto' })
   @ApiParam({ name: 'sku', required: true, type: Number })
-  @ApiResponse({status: 200, description: 'Stock cambiado', type: Product})
+  @ApiResponse({ status: 200, description: 'Stock cambiado', type: Product })
   @ApiBody({ type: PutProductStock })
   @Put(':sku/stock')
   async updateStock(@Param('sku') sku: number, @Body('quantity') quantity: number): Promise<Product> {
@@ -79,5 +79,4 @@ export class ProductController {
     }
     return await this.productService.updateStock(sku, quantity);
   }
-
 }
