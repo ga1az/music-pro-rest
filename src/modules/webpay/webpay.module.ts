@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { OrderModule } from '../order/order.module';
 
 @Module({
-  imports: [ConfigModule, OrderModule],
-  controllers: [WebpayController],
-  providers: [WebpayService]
+    imports: [ConfigModule, OrderModule],
+    controllers: [WebpayController],
+    providers: [WebpayService],
 })
 export class WebpayModule {}

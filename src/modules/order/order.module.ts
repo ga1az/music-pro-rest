@@ -9,15 +9,18 @@ import { OrderMongoRepository } from './repositories/order-mongo.repository';
 import { ProductModule } from '../product/product.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    ProductModule
-  ],
-  controllers: [OrderController],
-  providers: [OrderService, {
-    provide: ORDER_REPOSITORY,
-    useClass: OrderMongoRepository
-  }],
-  exports: [OrderService]
+    imports: [
+        MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+        ProductModule,
+    ],
+    controllers: [OrderController],
+    providers: [
+        OrderService,
+        {
+            provide: ORDER_REPOSITORY,
+            useClass: OrderMongoRepository,
+        },
+    ],
+    exports: [OrderService],
 })
 export class OrderModule {}

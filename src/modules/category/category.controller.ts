@@ -4,15 +4,15 @@ import { Category } from './entities/category.entity';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+    constructor(private readonly categoryService: CategoryService) {}
 
-  // @Get()
-  // async findAll(): Promise<Category[]> {
-  //   return await this.categoryService.findAll();
-  // }
+    // @Get()
+    // async findAll(): Promise<Category[]> {
+    //   return await this.categoryService.findAll();
+    // }
 
-  // @Get(':name')
-  // async findIdByName(@Param('name') name: string): Promise<string> {
-  //   return await this.categoryService.findIdByName(name);
-  // }
+    // @Get(':name')
+    // async findIdByName(@Param('name') name: string): Promise<string> {
+    //   return await this.categoryService.findIdByName(name);
+    // }
 }

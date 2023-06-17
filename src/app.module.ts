@@ -6,30 +6,29 @@ import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { WebpayModule } from './modules/webpay/webpay.module';
 
-
 @Module({
-  imports: [
-    CategoryModule,
-    ProductModule,
-    OrderModule,
-    WebpayModule,
-    ConfigModule.forRoot({
-      envFilePath:
-        process.env.NODE_ENV === 'production'
-          ? '.env.production'
-          : '.env.development',
-      isGlobal: true,
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-        dbName: configService.get<string>('MONGO_DBNAME'),
-      }),
-    }),
-  ],
-  controllers: [],
-  providers: [],
+    imports: [
+        CategoryModule,
+        ProductModule,
+        OrderModule,
+        WebpayModule,
+        ConfigModule.forRoot({
+            envFilePath:
+                process.env.NODE_ENV === 'production'
+                    ? '.env.production'
+                    : '.env.development',
+            isGlobal: true,
+        }),
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService) => ({
+                uri: configService.get<string>('MONGO_URI'),
+                dbName: configService.get<string>('MONGO_DBNAME'),
+            }),
+        }),
+    ],
+    controllers: [],
+    providers: [],
 })
 export class AppModule {}

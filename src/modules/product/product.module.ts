@@ -6,16 +6,20 @@ import { Product, ProductSchema } from './schemas/product.schema';
 import { PRODUCT_REPOSITORY } from './repositories/product.repository';
 import { ProductMongoRepository } from './repositories/product-mongo.repository';
 
-
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
-  ],
-  controllers: [ProductController],
-  providers: [ProductService, {
-    provide: PRODUCT_REPOSITORY,
-    useClass: ProductMongoRepository
-  }],
-  exports: [ProductService]
+    imports: [
+        MongooseModule.forFeature([
+            { name: Product.name, schema: ProductSchema },
+        ]),
+    ],
+    controllers: [ProductController],
+    providers: [
+        ProductService,
+        {
+            provide: PRODUCT_REPOSITORY,
+            useClass: ProductMongoRepository,
+        },
+    ],
+    exports: [ProductService],
 })
 export class ProductModule {}

@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponseCommitDto {
-  @ApiProperty()
-  status: string
+    @ApiProperty()
+    status: string;
 }
