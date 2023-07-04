@@ -16,7 +16,7 @@ Esta es una API REST para la tienda Music Pro, la cual permite realizar las oper
 ### Steps
 #### Modo one-step
 
-1. Clonar el repositorio
+1. Clonar el repositorio.
 2. Ejecutar comando `docker-compose up` en la raíz del proyecto para levantar el contenedor de la base de datos y la aplicación.
 3. Esto levantará la aplicación en el puerto 3000 y la base de datos en el puerto 27017 en modo desarrollo.
 3. Ya se puede consumir la API con sus respectivos endpoints.
