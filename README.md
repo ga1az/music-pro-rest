@@ -35,6 +35,6 @@ TBK_API_KEY_ID=597055555532
 TBK_API_KEY_SECRET=579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C
 ```
 
-luego deberas ejecutar el comando `cd docker/` `docker-compose up -d` del docker-compose.yml que se encuentra en la pagina `docker`
+Luego deberas ejecutar el comando `cd docker/` `docker-compose up -d` del docker-compose.yml que se encuentra en la pagina `docker`
 
 ahora podras ejecutar el comando `npm run start:dev` en la raíz del proyecto para levantar la aplicación en modo desarrollo.
