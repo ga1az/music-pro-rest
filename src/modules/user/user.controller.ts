@@ -1,46 +1,60 @@
-import { Body, Controller, Get, Post, ParseIntPipe } from '@nestjs/common';
-import { Delete, Param, Patch, UseGuards } from '@nestjs/common/decorators';
-import { createUserDto } from './dto/create-user.dto';
-import { User } from './user.entity';
+import { Body, Controller, Get, Post, ParseIntPipe, HttpException } from '@nestjs/common';
+import { Delete, Param, Patch, Query, Req, UseGuards } from '@nestjs/common/decorators';
+import {
+    ApiBody,
+    ApiOperation,
+    ApiParam,
+    ApiQuery,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
 import { UserService } from './user.service';
-import { updateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
-@Controller('users')
+
+@ApiTags('user')
+@Controller('user')
 export class UsersController {
     constructor(private readonly usersService: UserService) { }
 
+    @ApiOperation({ summary: 'Crea un usuario' })
+    @ApiResponse({
+        status: 200,
+        description: 'Usuario creado',
+        type: User,
+    })
     @Post()
-    createUser(@Body() user: createUserDto) {
-        return this.usersService.createUser(user);
+    async create(@Body() user: CreateUserDto): Promise<User> {
+        return await this.usersService.createUser(user);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Obtiene todos los usuarios' })
+    @ApiResponse({
+        status: 200,
+        description: 'Usuarios obtenidos',
+        type: User,
+    })
     @Get()
-    getUsers(): Promise<User[]> {
+    @UseGuards(JwtAuthGuard)
+    getUsers(@Req() request: Request) {
         return this.usersService.getUsers();
     }
 
-    @Get(':id')
-    getUserById(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.getUserById(id);
-    }
 
-    @Delete(':id')
-    deleteUser(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.deleteUser(id);
-    }
-
-    @Patch(':id')
-    updateUser(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() user: updateUserDto,
-    ) {
-        return this.usersService.updateUser(id, user);
-    }
-
+    @ApiOperation({ summary: 'Login de usuario' })
+    @ApiResponse({
+        status: 200,
+        description: 'Usuario logueado',
+        type: User,
+    })
+    @ApiBody({ type: CreateUserDto }) // Importante: Asegúrate de importar y usar la clase UserDto adecuada para la documentación de Swagger
     @Post('login')
-    login(@Body() user: createUserDto) {
-        return this.usersService.login(user);
+    login(@Body() user: CreateUserDto) {
+        const { username, password } = user;
+        return this.usersService.login(username, password);
     }
+
 }

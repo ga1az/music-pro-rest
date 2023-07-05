@@ -1,29 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import { createUserDto } from './dto/create-user.dto';
-import { updateUserDto } from './dto/update-user.dto';
+import { ConflictException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 import { hash, compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { USER_REPOSITORY, UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UserService {
+    findAll(inStock: boolean) {
+        throw new Error('Method not implemented.');
+    }
     constructor(
-        @InjectRepository(User) private userRepository: Repository<User>,
+        @Inject(USER_REPOSITORY)
+        private userRepository: UserRepository,
         private jwtService: JwtService,
     ) { }
 
-    async createUser(user: createUserDto) {
-        const userFind = await this.userRepository.findOne({
-            where: {
-                username: user.username,
-            },
-        });
-        if (userFind) {
-            return new HttpException('User already exists', HttpStatus.CONFLICT);
+    async exists(username: string): Promise<boolean> {
+        return await this.userRepository.exists(username);
+    }
+    async createUser(user: CreateUserDto): Promise<any> {
+        const exists = await this.userRepository.exists(user.username);
+        if (exists) {
+            throw new ConflictException(
+                `Product with "${user.username}" already exists`,
+            );
         }
-
         const { password } = user;
         const hashPass = await hash(password, 10);
         user = { ...user, password: hashPass };
@@ -35,13 +37,10 @@ export class UserService {
         return this.userRepository.find();
     }
 
-    getUserById(id: number) {
-        const userFound = this.userRepository.findOne({
-            where: {
-                id: id,
-            },
-        });
 
+
+    getUserById(id: number) {
+        const userFound = this.userRepository.getUserById(id);
         if (!userFound) {
             return new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
@@ -49,51 +48,37 @@ export class UserService {
         return userFound;
     }
 
-    async deleteUser(id: number) {
-        const result = await this.userRepository.delete({ id: id });
-        if (result.affected === 0) {
-            return new HttpException('User not found', HttpStatus.NOT_FOUND);
-        }
-        return result;
-    }
-
-    async updateUser(id: number, user: updateUserDto) {
-        const userFound = await this.getUserById(id);
-
-        if (!userFound) {
-            return new HttpException('User not found', HttpStatus.NOT_FOUND);
-        }
-
-        const updatedUser = Object.assign(userFound, user);
-
-        return this.userRepository.save(updatedUser);
-    }
-
-    async login(user: createUserDto) {
-        const { username, password } = user;
-        const userFound = await this.userRepository.findOne({
+    async delete(username: string): Promise<void> {
+        const exists = await this.userRepository.findOne({
             where: {
                 username: username,
             },
         });
-        if (!userFound) {
-            return new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    }
+
+    async update(id: number, user: User): Promise<User> {
+        const exists = await this.userRepository.exists(user.username);
+        if (!exists) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
-        const checkPass = await compare(password, userFound.password);
+        return await this.userRepository.update(user);
+    }
 
-        // Verificar si la contraseña es correcta
-        if (!checkPass) {
-            return new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
+    async login(username: string, password: string) {
+        const user: any = await this.userRepository.getUserByUsername(username);
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
 
-        const payload = { id: userFound.id, username: userFound.username };
-        const token = this.jwtService.sign(payload);
+        const isMatch = await compare(password, user.password);
+        if (!isMatch) {
+            throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+        }
 
-        const data = {
-            user: userFound,
-            token,
+        const payload = { username: user.username, sub: user.id };
+        return {
+            access_token: this.jwtService.sign(payload),
         };
-
-        return data;
     }
 }
