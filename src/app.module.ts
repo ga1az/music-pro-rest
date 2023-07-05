@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { WebpayModule } from './modules/webpay/webpay.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { WebpayModule } from './modules/webpay/webpay.module';
         ProductModule,
         OrderModule,
         WebpayModule,
+        UserModule,
         ConfigModule.forRoot({
             envFilePath:
                 process.env.NODE_ENV === 'production'
